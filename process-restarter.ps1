@@ -40,6 +40,14 @@ $doResponsiveCheck = $true
 #DO NOT CHANGE ANYTHING BELOW THIS LINE
 ############
 
+#elevation check
+If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+ {    
+  Echo "This script needs to be run As Admin as it has to iterate over processes run by other users"
+  Break
+ }
+
+
 #global variables
 $unresponsiveDict = @{}
 
