@@ -16,7 +16,8 @@ Example Usage
 Discovering processes to watch: .\process-restarter.ps1 -inspectProcess ShooterGameServer.exe
 Running continuously: .\process-restarter.ps1 -logfile .\restarter.log -persistent $true
 Running once: .\process-restarter.ps1 -logfile .\restarter.log
-Enabling Debug Messages: .\process-restarter.ps1 -logfile .\restarter.log -enableDebug $true```
+Enabling Debug Messages: .\process-restarter.ps1 -logfile .\restarter.log -enableDebug $true
+```
 
 
 Example shortcut
