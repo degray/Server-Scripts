@@ -43,11 +43,10 @@ $doResponsiveCheck = $true
 #elevation check
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
  {    
-  Echo "This script needs to be run As Admin as it has to iterate over processes run by other users"
+  Write-Host "This script needs to be run As Admin as it has to iterate over processes run by other users"
   exit
  }
-
-
+ 
 #global variables
 $unresponsiveDict = @{}
 
@@ -100,8 +99,8 @@ if($PSBoundParameters.ContainsKey("enableDebug")) {
 
 if($PSBoundParameters.ContainsKey("inspectProcess")) {
     Out-File $processFile
-    (Get-CimInstance Win32_Process | where CommandLine -match $([regex]::escape($inspectProcess)) | format-list * | Out-Host)
-    (Get-CimInstance Win32_Process | where CommandLine -match $([regex]::escape($inspectProcess))) | %{Out-File -FilePath $processFile -NoClobber -Append -InputObject $($_.ExecutablePath + $seperator + $_.CommandLine.Replace($_.ExecutablePath, "").Replace("`"`"", "").Trim()); Write-Host "Found $($_.CommandLine) "}
+    #((Get-CimInstance Win32_Process | Where-Object {($_.CommandLine -match $([regex]::escape($inspectProcess)) -and $_.CommandLine -notmatch $([regex]::escape($PSCommandPath)))}) | Select-Object -Property CommandLine | format-list * | Out-Host)
+    ((Get-CimInstance Win32_Process | Where-Object {($_.CommandLine -match $([regex]::escape($inspectProcess)) -and $_.CommandLine -notmatch $([regex]::escape($PSCommandPath)))}) | %{Out-File -FilePath $processFile -NoClobber -Append -InputObject $($_.ExecutablePath + $seperator + $_.CommandLine.Replace($_.ExecutablePath, "").Replace("`"`"", "").Trim()); Write-Host "Found $($_.CommandLine)"})
 } else {
     log "Starting restarter with the following processes:"
     foreach($line in Get-Content $processFile) {
