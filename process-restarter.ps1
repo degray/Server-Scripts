@@ -49,7 +49,17 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
  
 #global variables
 $unresponsiveDict = @{}
+if (![String]::IsNullOrWhiteSpace($logfile)) {
+    if (![System.IO.Path]::IsPathRooted($logfile)) {
+        $logfile = [System.IO.Path]::Combine($PSScriptRoot, $logfile)
+    }
+}
 
+if (![String]::IsNullOrWhiteSpace($processFile)) {
+    if (![System.IO.Path]::IsPathRooted($processFile)) {
+        $processFile = [System.IO.Path]::Combine($PSScriptRoot, $processFile)
+    }
+}
 
 function log_file($message) {
     if (![String]::IsNullOrWhiteSpace($logfile)) {
