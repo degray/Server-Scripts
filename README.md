@@ -22,7 +22,7 @@ Enabling Debug Messages: .\process-restarter.ps1 -logfile .\restarter.log -enabl
 
 Example shortcut
 
-`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noLogo -ExecutionPolicy unrestricted -command "C:\restarter\process-restarter.ps1 -logfile .\restarter.log -persistent $true"`
+`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noLogo -ExecutionPolicy unrestricted -command "C:\restarter\process-restarter.ps1 -logfile .\restarter.log -persistent $true -runAsUser user -runAsUserPassword 'password'"`
 
 Start In: 
 `C:\restarter\`
