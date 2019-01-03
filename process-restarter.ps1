@@ -18,7 +18,11 @@ param(
     #Location of the log file
     [Parameter(Mandatory=$false)][string]$logfile,
     #Enable debug messaging or not
-    [Parameter(Mandatory=$false)][bool]$enableDebug
+    [Parameter(Mandatory=$false)][bool]$enableDebug,
+    #User to run the started processes as
+    [Parameter(Mandatory=$false)][string]$runAsUser,
+    #User password to run the started processes as
+    [Parameter(Mandatory=$false)][string]$runAsUserPassword
 )
 
 
@@ -46,6 +50,7 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
   Write-Host "This script needs to be run As Admin as it has to iterate over processes run by other users"
   exit
  }
+
  
 #global variables
 $unresponsiveDict = @{}
@@ -91,7 +96,16 @@ function start_process($line) {
     $processName = $line.Split($seperator)[0].Trim()
     $processArgs = $line.Split($seperator)[1].Trim()
     log "Starting Process $($processName) with args $($processArgs)"
-    Start-Process $processName $processArgs
+    if ($startProcessCredentials) {
+        log_debug "Using startProcessCredentials"
+        Start-Process $processName $processArgs -Credential $startProcessCredentials
+    } elseif (![String]::IsNullOrWhiteSpace($runAsUser)) {
+        log_debug "Using runAsUser only"
+        Start-Process $processName $processArgs -Credential $runAsUser
+    } else {
+        log_debug "Using default start"
+        Start-Process $processName $processArgs
+    }
     $unresponsiveDict[$line] = 0
     log "Started Process $($processName) successfully"
 }
@@ -105,6 +119,13 @@ if($PSBoundParameters.ContainsKey("enableDebug")) {
 } else {
     $enableDebug = $false
 }
+
+$startProcessCredentials = $null
+if ((![String]::IsNullOrWhiteSpace($runAsUser)) -and (![String]::IsNullOrWhiteSpace($runAsUserPassword))) {
+    log_debug "Setting full credentials"
+    $secretPassword = $runAsUserPassword | ConvertTo-SecureString -AsPlainText -Force
+    $startProcessCredentials = New-Object System.Management.Automation.PSCredential $runAsUser, $secretPassword    
+ }
 
 
 if($PSBoundParameters.ContainsKey("inspectProcess")) {
@@ -167,4 +188,3 @@ if($PSBoundParameters.ContainsKey("inspectProcess")) {
         }
     }
 }
-
